@@ -1,0 +1,11 @@
+export {
+  desc = "Perform a ping to a Redis instance."
+  title = "redis: ping"
+  fun = handle
+}
+
+/**
+ * Runs the operation
+ */
+@async
+fn handle(ctx=> {state}) = state.redis.ping()

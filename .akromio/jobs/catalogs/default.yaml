@@ -1,0 +1,62 @@
+spec: v1.0
+desc: Internal catalog.
+
+dataset:
+  - const: redis
+    value:
+      image: redis
+      container: redis
+      port: 6379
+  
+  - const: src
+    value: ./src
+
+  - const: dist
+    value: ./dist
+
+jobDefaultName: build
+jobs:
+  - macro: build
+    title: Build the plugin
+    steps:
+      - lint
+      - fs.remove $(dist)
+      - compile
+      - test
+  
+  - group: src
+    jobs:
+      - macro: lint
+        title: Analyze code statically
+        steps:
+          - [exec.log, dogmac check $(src)]
+
+      - macro: compile
+        title: Compile code
+        steps:
+          - [exec.log, dogmac js -o $(dist)/cjs $(src)]
+          - [exec.log, npm run env -- babel -d $(dist) $(dist)]
+
+  - group: test
+    jobs:
+      - macro: tests
+        title: Run the tests
+        steps:
+          - test
+          - test/itg
+
+      - macro: test
+        title: Run the unit tests
+        steps:
+          - [exec.log, npm run env -- mocha --config .mocharc.yaml]
+      
+      - macro: redis/start
+        title: Start Redis instance
+        steps:
+          - [exec.log, sudo docker run --name $(redis.container) --rm -d -p $(redis.port):6379 $(redis.image)]
+          - [exec.log, redis-cli ping]
+
+      - macro: redis/stop
+        title: Stop redis instance
+        steps:
+          - [exec, sudo docker stop $(redis.container)]

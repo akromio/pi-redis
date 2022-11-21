@@ -1,0 +1,39 @@
+use (
+  {createClient} = dep://redis
+)
+
+export {
+  plugin = "redis"
+  desc = "Akromio plugin for working with Redis."
+  tags = []
+  ini = initialize
+  fin = finalize
+  ops =
+    ping = use("./ops/ping")
+}
+
+/**
+ * Initializes the plugin, returning its state.
+ */
+async fn initialize(args) -> state: map
+  # (1) create Redis client
+  const client = createClient({
+    socket =
+      host = args.host ?? "localhost"
+      port = args.port ?? 6379
+    if opts.username then username = opts.username
+    if opts.password then password = opts.password
+    readonly = opts.readonly ?? false
+  })
+
+  # (2) connect client
+  await(client.connect())
+
+  # (3) set state
+  state.{redis = client}
+
+/**
+ * Finalizes the plugin.
+ */
+async proc finalize(state:> {redis})
+  await(redis.disconnect())

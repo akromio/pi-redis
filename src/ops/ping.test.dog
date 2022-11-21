@@ -1,0 +1,25 @@
+use (
+  alias://expected
+  {simulator, method} = alias://doubles
+  pi = ping
+)
+
+suite(__filename, proc()
+  const (
+    handle = pi.fun
+  )
+
+  suite("handle()", proc()
+    test("when connected, nothing must be returned", async proc()
+      # (1) act
+      const (
+        params = {}
+        redis = simulator({}, ping = method.resolves("PONG"))
+        out = await(handle(state = {redis}, params))
+      )
+
+      # (2) assessment
+      expected(out).equalTo("PONG")
+    end)
+  end)
+end)
