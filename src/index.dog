@@ -1,5 +1,5 @@
 use (
-  {createClient} = dep://redis
+  {createClient} = alias://redis
 )
 
 export {
@@ -21,9 +21,9 @@ async fn initialize(args) -> state: map
     socket =
       host = args.host ?? "localhost"
       port = args.port ?? 6379
-    if opts.username then username = opts.username
-    if opts.password then password = opts.password
-    readonly = opts.readonly ?? false
+    if args.username then username = args.username
+    if args.password then password = args.password
+    readonly = args.readonly ?? false
   })
 
   # (2) connect client
