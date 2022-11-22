@@ -9,8 +9,7 @@ suite(__filename, proc()
 
   setup(proc()
     const client = simulator({}, connect = method.resolves(), disconnect = method.resolves())
-    interceptor.module(redisPath, createClient = fn()=(client))
-    # interceptor.module(redisPath, createClient = method.returns(client))
+    interceptor.module(redisPath, createClient = fun.returns(client))
   end)
 
   teardown(async proc()

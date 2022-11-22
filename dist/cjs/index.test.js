@@ -19,11 +19,7 @@ suite(__filename, () => {
           'disconnect': method.resolves()
         });
         interceptor.module(redisPath, {
-          'createClient': () => {
-            {
-              return client;
-            }
-          }
+          'createClient': fun.returns(client)
         });
       }
     });
