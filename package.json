@@ -51,11 +51,8 @@
     "prettier": "^2.7.1"
   },
   "scripts": {
-    "lint": "dogmac check src tests",
-    "build": "npm run build/src",
-    "build/src": "rm -rf dist/ && dogmac js -o dist/cjs src && babel -d dist dist",
-    "test": "mocha --config .mocharc.yaml",
-    "test/build": "rm -rf ./__tests__ && dogmac js -o __tests__ tests && babel -d __tests__ __tests__",
-    "cov": "c8 mocha --config .mocharc.yaml"
+    "build": "gattuso r build",
+    "test": "gattuso r tests/unit",
+    "cov": "gattuso r cov"
   }
 }

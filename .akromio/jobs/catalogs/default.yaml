@@ -25,7 +25,6 @@ dataset:
     value: ./__tests__
 
 defaultJobName: build
-
 jobs:
   - macro: build
     title: Build the plugin
