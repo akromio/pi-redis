@@ -1,0 +1,54 @@
+use (
+  alias://expected
+  {interceptor, simulator, fun, method} = alias://doubles
+  alias://redis
+)
+
+suite(__filename, proc()
+  const redisPath = require.resolve("@redis/client")
+
+  setup(proc()
+    const client = simulator({}, connect = method.resolves(), disconnect = method.resolves())
+    interceptor.module(redisPath, createClient = fun.returns(client))
+  end)
+
+  teardown(async proc()
+    interceptor.clear(redisPath)
+  end)
+
+  test("when ini() called, state must be returned", async proc()
+    # (1) act
+    const (
+      pi = use("./index")
+      out = await(pi.ini({}))
+    )
+
+    # (2) assessment
+    expected(out).toHave("redis")
+  end)
+
+  test("when ini(args) called, state must be returned", async proc()
+    # (1) act
+    const (
+      pi = use("./index")
+      out = await(pi.ini(
+        host = "localhost", port = 6379, username = "me", password = "pass", readonly = true
+      ))
+    )
+
+    # (2) assessment
+    expected(out).toHave("redis")
+  end)
+
+  test("when fin() called, state.redis used and nothing must be returned", async proc()
+    # (1) act
+    const (
+      pi = use("./index")
+      state = await(pi.ini({}))
+      out = await(pi.fin(state))
+    )
+
+    # (2) assessment
+    expected(out).toBeNil()
+  end)
+end)

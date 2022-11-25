@@ -1,0 +1,31 @@
+use (
+  alias://expected
+  {createClient} = dep://redis
+  pi = ~
+)
+
+suite(__filename, proc()
+  suite("ping", proc()
+    var (
+      {ini, fin} ::= pi
+      {ping} ::= pi.ops
+      state
+    )
+
+    setup(async proc()
+      state = await(ini(host = "localhost", port = 6379))
+    end)
+
+    teardown(async proc()
+      await(fin(state))
+    end)
+
+    test("ping must return pong", async proc()
+      # (1) act
+      const out = await(ping.fun(state=, params = {}))
+
+      # (2) assessment
+      expected(out).equalTo("PONG")
+    end)
+  end)
+end)

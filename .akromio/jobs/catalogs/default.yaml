@@ -9,52 +9,80 @@ dataset:
       port: 6379
   
   - const: src
+    desc: Dir with the source code.
     value: ./src
 
   - const: dist
+    desc: Output dir.
     value: ./dist
+  
+  - const: testSrc
+    desc: Dir with the non-unit tests.
+    value: ./tests
+  
+  - const: testDist
+    desc: Non-unit test output dir.
+    value: ./__tests__
 
-jobDefaultName: build
+defaultJobName: build
 jobs:
   - macro: build
     title: Build the plugin
     steps:
       - lint
       - fs.remove $(dist)
+      - fs.remove $(testDist)
       - compile
-      - test
+      - tests/unit
   
   - group: src
     jobs:
       - macro: lint
         title: Analyze code statically
         steps:
-          - [exec.log, dogmac check $(src)]
+          - [exec.log, dogmac check $(src) $(testSrc)]
 
       - macro: compile
         title: Compile code
         steps:
           - [exec.log, dogmac js -o $(dist)/cjs $(src)]
           - [exec.log, npm run env -- babel -d $(dist) $(dist)]
+          - [exec.log, dogmac js -o $(testDist) $(testSrc)]
+          - [exec.log, npm run env -- babel -d $(testDist) $(testDist)]
 
   - group: test
     jobs:
       - macro: tests
-        title: Run the tests
+        title: Run the tests locally
+        ini:
+          - redis/start
+        fin:
+          - redis/stop
         steps:
-          - test
-          - test/itg
+          - tests/unit
+          - tests/itg
 
-      - macro: test
+      - macro: tests/unit
         title: Run the unit tests
         steps:
           - [exec.log, npm run env -- mocha --config .mocharc.yaml]
       
+      - macro: tests/itg
+        title: Run the integration tests
+        steps:
+          - [exec.log, npm run env -- mocha --config .mocharc.itg.yaml]
+      
+      - macro: cov
+        title: Code coverage
+        steps:
+          - [exec.log, npm run env -- c8 mocha --config .mocharc.yaml]
+      
       - macro: redis/start
         title: Start Redis instance
         steps:
-          - [exec.log, sudo docker run --name $(redis.container) --rm -d -p $(redis.port):6379 $(redis.image)]
-          - [exec.log, redis-cli ping]
+          - [exec, sudo docker run --name $(redis.container) --rm -d -p $(redis.port):6379 $(redis.image)]
+          - sleep 1s
+          - [exec, redis-cli ping]
 
       - macro: redis/stop
         title: Stop redis instance
