@@ -64,7 +64,7 @@ suite(__filename, () => {
               ["stream"]: stream,
               ["group"]: group
             };
-            const redis = monitor(sim({}, {
+            const redis = monitor(sim({
               'sendCommand': method.resolves("OK")
             }));
             const state = {

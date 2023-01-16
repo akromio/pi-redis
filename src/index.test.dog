@@ -8,7 +8,7 @@ suite(__filename, proc()
   const redisPath = require.resolve("@redis/client")
 
   setup(proc()
-    const client = sim({}, connect = method.resolves(), disconnect = method.resolves())
+    const client = sim(connect = method.resolves(), disconnect = method.resolves())
     interceptor.module(redisPath, createClient = fun.returns(client))
   end)
 

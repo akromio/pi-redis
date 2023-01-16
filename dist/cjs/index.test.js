@@ -14,7 +14,7 @@ suite(__filename, () => {
     const redisPath = require.resolve("@redis/client");
     setup(() => {
       {
-        const client = sim({}, {
+        const client = sim({
           'connect': method.resolves(),
           'disconnect': method.resolves()
         });

@@ -59,7 +59,7 @@ suite(__filename, proc()
       # (1) act
       const (
         params = {stream, group}
-        redis = monitor(sim({}, sendCommand = method.resolves("OK")))
+        redis = monitor(sim(sendCommand = method.resolves("OK")))
         state = {redis}
         out = await(handle(state=, params))
       )
