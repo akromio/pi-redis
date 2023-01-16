@@ -8,36 +8,60 @@ const {
 const pi = _core.dogma.use(require("../.."));
 suite(__filename, () => {
   {
-    suite("ping", () => {
+    const {
+      ini,
+      fin
+    } = pi;
+    let state;
+    let redis;
+    setup(async () => {
       {
-        const {
-          ini,
-          fin
-        } = pi;
+        ({
+          redis: redis
+        } = state = (0, await ini({
+          'host': "localhost",
+          'port': 6379
+        })));
+      }
+    });
+    teardown(async () => {
+      {
+        0, await fin(state);
+      }
+    });
+    suite("PING", () => {
+      {
         const {
           ping
         } = pi.ops;
-        let state;
-        setup(async () => {
-          {
-            state = (0, await ini({
-              'host': "localhost",
-              'port': 6379
-            }));
-          }
-        });
-        teardown(async () => {
-          {
-            0, await fin(state);
-          }
-        });
-        test("ping must return pong", async () => {
+        test("perform ping for getting pong", async () => {
           {
             const out = (0, await ping.fun({
               'state': state,
               'params': {}
             }));
             expected(out).equalTo("PONG");
+          }
+        });
+      }
+    });
+    suite("XCREATE GROUP", () => {
+      {
+        const xcreate = _core.dogma.getItem(pi.ops, "xgroup.create");
+        const stream = "my-stream";
+        const group = "my-group";
+        test("create a consumer group", async () => {
+          {
+            const out = (0, await xcreate.fun({
+              'state': state,
+              'params': {
+                ["stream"]: stream,
+                ["group"]: group
+              }
+            }));
+            expected(out).equalTo("OK");
+            const groups = (0, await redis.sendCommand(["XINFO", "GROUPS", stream]));
+            expected(_core.dogma.getItem(groups, 0)).second.equalTo(group);
           }
         });
       }

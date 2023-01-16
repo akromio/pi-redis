@@ -10,6 +10,7 @@ export {
   fin = finalize
   ops =
     ping = use("./ops/ping")
+    'xgroup.create' = use("./ops/xgroupcreate")
 }
 
 /**

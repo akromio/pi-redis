@@ -1,6 +1,6 @@
 use (
   alias://expected
-  {interceptor, simulator, fun, method} = alias://doubles
+  {interceptor, sim, fun, method} = alias://doubles
   alias://redis
 )
 
@@ -8,12 +8,23 @@ suite(__filename, proc()
   const redisPath = require.resolve("@redis/client")
 
   setup(proc()
-    const client = simulator({}, connect = method.resolves(), disconnect = method.resolves())
+    const client = sim({}, connect = method.resolves(), disconnect = method.resolves())
     interceptor.module(redisPath, createClient = fun.returns(client))
   end)
 
   teardown(async proc()
     interceptor.clear(redisPath)
+  end)
+
+  test("when called, api must be returned", proc()
+    # (1) act
+    const out = use("./index")
+
+    # (2) assessment
+    expected(out.ops).toHave([
+      "ping"
+      "xgroup.create"
+    ])
   end)
 
   test("when ini() called, state must be returned", async proc()

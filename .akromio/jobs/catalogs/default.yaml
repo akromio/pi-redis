@@ -4,7 +4,7 @@ desc: Internal catalog.
 dataset:
   - const: redis
     value:
-      image: redis
+      image: redis:alpine
       container: redis
       port: 6379
   
@@ -54,10 +54,6 @@ jobs:
     jobs:
       - macro: tests
         title: Run the tests locally
-        ini:
-          - redis/start
-        fin:
-          - redis/stop
         steps:
           - tests/unit
           - tests/itg
@@ -69,6 +65,8 @@ jobs:
       
       - macro: tests/itg
         title: Run the integration tests
+        ini: redis/start
+        fin: redis/stop
         steps:
           - [exec.log, npm run env -- mocha --config .mocharc.itg.yaml]
       
@@ -77,14 +75,16 @@ jobs:
         steps:
           - [exec.log, npm run env -- c8 mocha --config .mocharc.yaml]
       
+  - group: docker
+    jobs:
       - macro: redis/start
         title: Start Redis instance
         steps:
-          - [exec, sudo docker run --name $(redis.container) --rm -d -p $(redis.port):6379 $(redis.image)]
-          - sleep 1s
-          - [exec, redis-cli ping]
+          - sudo: docker run --name $(redis.container) --rm -d -p $(redis.port):6379 $(redis.image)
+          - step: sleep 1s
+          - run: redis-cli ping
 
       - macro: redis/stop
         title: Stop redis instance
         steps:
-          - [exec, sudo docker stop $(redis.container)]
+          - sudo: docker stop $(redis.container)

@@ -1,6 +1,7 @@
 use (
   alias://expected
-  {simulator, method} = alias://doubles
+  {sim, method} = alias://doubles
+  
   pi = ping
 )
 
@@ -14,7 +15,7 @@ suite(__filename, proc()
       # (1) act
       const (
         params = {}
-        redis = simulator({}, ping = method.resolves("PONG"))
+        redis = sim(ping = method.resolves("PONG"))
         out = await(handle(state = {redis}, params))
       )
 

@@ -11,7 +11,8 @@ module.exports = exports = {
   ["ini"]: initialize,
   ["fin"]: finalize,
   ["ops"]: {
-    ["ping"]: _core.dogma.use(require("./ops/ping"))
+    ["ping"]: _core.dogma.use(require("./ops/ping")),
+    ["xgroup.create"]: _core.dogma.use(require("./ops/xgroupcreate"))
   }
 };
 async function initialize(args) {
