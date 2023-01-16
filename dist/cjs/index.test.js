@@ -4,7 +4,7 @@ var _core = require("@dogmalang/core");
 const expected = _core.dogma.use(require("@akromio/expected"));
 const {
   interceptor,
-  simulator,
+  sim,
   fun,
   method
 } = _core.dogma.use(require("@akromio/doubles"));
@@ -14,7 +14,7 @@ suite(__filename, () => {
     const redisPath = require.resolve("@redis/client");
     setup(() => {
       {
-        const client = simulator({}, {
+        const client = sim({
           'connect': method.resolves(),
           'disconnect': method.resolves()
         });
@@ -26,6 +26,12 @@ suite(__filename, () => {
     teardown(async () => {
       {
         interceptor.clear(redisPath);
+      }
+    });
+    test("when called, api must be returned", () => {
+      {
+        const out = _core.dogma.use(require("./index"));
+        expected(out.ops).toHave(["ping", "xgroup.create"]);
       }
     });
     test("when ini() called, state must be returned", async () => {

@@ -1,0 +1,51 @@
+name: ci-itg
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Run integration tests
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [16.x, 18.x]
+    
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      
+      - name: Set up redis-cli
+        run: sudo apt install redis-tools
+      
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      
+      - name: Set up Gattuso
+        uses: akromio/setup-gattuso@v1
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run integration tests
+        run: gattuso r ci/itg
