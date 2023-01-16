@@ -10,6 +10,7 @@ on:
       - "**.js"
       - "**.json"
       - "**/.mocharc.yaml"
+      - .github/workflows/ci*.yaml
 
 jobs:
   runTests:
