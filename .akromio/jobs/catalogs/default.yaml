@@ -40,15 +40,15 @@ jobs:
       - macro: lint
         title: Analyze code statically
         steps:
-          - [exec.log, dogmac check $(src) $(testSrc)]
+          - exec.log dogmac check $(src) $(testSrc)
 
       - macro: compile
         title: Compile code
         steps:
-          - [exec.log, dogmac js -o $(dist)/cjs $(src)]
-          - [exec.log, npm run env -- babel -d $(dist) $(dist)]
-          - [exec.log, dogmac js -o $(testDist) $(testSrc)]
-          - [exec.log, npm run env -- babel -d $(testDist) $(testDist)]
+          - exec.log dogmac js -o $(dist)/cjs $(src)
+          - exec.log npm run env -- babel -d $(dist) $(dist)
+          - exec.log dogmac js -o $(testDist) $(testSrc)
+          - exec.log npm run env -- babel -d $(testDist) $(testDist)
 
   - group: test
     jobs:
@@ -61,19 +61,24 @@ jobs:
       - macro: tests/unit
         title: Run the unit tests
         steps:
-          - [exec.log, npm run env -- mocha --config .mocharc.yaml]
+          - exec.log npm run env -- mocha --config .mocharc.yaml
       
       - macro: tests/itg
         title: Run the integration tests
         ini: redis/start
         fin: redis/stop
         steps:
-          - [exec.log, npm run env -- mocha --config .mocharc.itg.yaml]
+          - ci/itg
+      
+      - macro: ci/itg
+        title: Run the integration tests (CI platform)
+        steps:
+          - exec.log npm run env -- mocha --config .mocharc.itg.yaml
       
       - macro: cov
         title: Code coverage
         steps:
-          - [exec.log, npm run env -- c8 mocha --config .mocharc.yaml]
+          - exec.log npm run env -- c8 mocha --config .mocharc.yaml
       
   - group: docker
     jobs:
