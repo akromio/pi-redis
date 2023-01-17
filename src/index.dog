@@ -36,5 +36,5 @@ async fn initialize(args) -> state: map
 /**
  * Finalizes the plugin.
  */
-async proc finalize(state:> {redis})
+async proc finalize(state:> {redis?})
   pawait(redis.disconnect())
