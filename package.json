@@ -1,6 +1,6 @@
 {
   "name": "@akromio/pi-redis",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Akromio plugin for working with Redis.",
   "author": {
     "name": "Sia Codelabs",
