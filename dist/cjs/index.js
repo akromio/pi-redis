@@ -44,7 +44,7 @@ async function initialize(args) {
 async function finalize(state) {
   /* c8 ignore next */_core.dogma.expect("state", state, _core.dogma.intf("inline", {
     redis: {
-      optional: false,
+      optional: true,
       type: null
     }
   }));
