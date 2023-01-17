@@ -52,6 +52,6 @@ async function finalize(state) {
     redis
   } = state;
   {
-    0, await redis.disconnect();
+    await _core.dogma.pawait(() => redis.disconnect());
   }
 }
