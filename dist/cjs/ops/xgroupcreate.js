@@ -34,7 +34,7 @@ function buildTitle(params) {
     group
   } = params;
   {
-    return `redis: XGROUP CREATE $(stream) $(group) $ MKSTREAM`;
+    return `redis: XGROUP CREATE ${stream} ${group} $ MKSTREAM`;
   }
 }
 function handle(ctx) {

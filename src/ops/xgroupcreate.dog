@@ -21,7 +21,7 @@ fn buildParams(args?) -> params: map
 /**
  * Builds the title from the parameters.
  */
-fn buildTitle(params=> {stream, group}) = $"redis: XGROUP CREATE $(stream) $(group) $ MKSTREAM"
+fn buildTitle(params=> {stream, group}) = $"redis: XGROUP CREATE ${stream} ${group} $ MKSTREAM"
 
 /**
  * Runs the operation

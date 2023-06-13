@@ -50,7 +50,7 @@ suite(__filename, proc()
       )
 
       # (2) assessment
-      expected(out).equalTo($"redis: XGROUP CREATE $(stream) $(group) $ MKSTREAM")
+      expected(out).equalTo($"redis: XGROUP CREATE ${stream} ${group} $ MKSTREAM")
     end)
   end)
 
