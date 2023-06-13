@@ -7,7 +7,7 @@ const {
   sim,
   method
 } = _core.dogma.use(require("@akromio/doubles"));
-const op = _core.dogma.use(require("./xgroupcreate"));
+const op = _core.dogma.use(require("./create"));
 const buildParams = op.parameterizer;
 const buildTitle = op.title;
 const handle = op.fun;

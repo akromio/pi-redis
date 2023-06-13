@@ -1,0 +1,32 @@
+export {
+  desc = "Run a XGROUP DESTROY command."
+  parameterizer = buildParams
+  title = buildTitle
+  fun = handle
+}
+
+/**
+ * Builds params from args.
+ */
+fn buildParams(args?) -> params: map
+  # (1) create params
+  with type(args) do
+    if list then [params.stream, params.group] = args
+    else params = args
+  
+  # (2) validate params
+  expect(params.stream, text)
+  expect(params.group, text)
+
+/**
+ * Builds the title from the parameters.
+ */
+fn buildTitle(params=> {stream, group}) = $"redis: XGROUP DESTROY ${stream} ${group}"
+
+/**
+ * Runs the operation, returning the number of groups destroyed.
+ */
+@async
+fn handle(ctx=> {state, params}) = state.redis.sendCommand([
+  "XGROUP", "DESTROY", params.stream, params.group
+])

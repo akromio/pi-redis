@@ -1,0 +1,75 @@
+use (
+  alias://expected
+  {monitor, sim, method} = alias://doubles
+  
+  op = destroy
+)
+
+const (
+  buildParams = op.parameterizer
+  buildTitle = op.title
+  handle = op.fun
+)
+
+suite(__filename, proc()
+  const (
+    stream = "my-stream"
+    group = "my-group"
+  )
+
+  suite("buildParams()", proc()
+    test("when list, {stream, group} must be returned", proc()
+      # (1) act
+      const (
+        args = [stream, group]
+        out = buildParams(args)
+      )
+
+      # (2) assessment
+      expected(out).equalTo(stream=, group)
+    end)
+
+    test("when map, {stream, group} must be returned", proc()
+      # (1) act
+      const (
+        args = {stream, group}
+        out = buildParams(args)
+      )
+
+      # (2) assessment
+      expected(out).equalTo(stream=, group)
+    end)
+  end)
+
+  suite("buildTitle()", proc()
+    test("when called, a title must be returned", proc()
+      # (1) act
+      const (
+        params = {stream, group}
+        out = buildTitle(params)
+      )
+
+      # (2) assessment
+      expected(out).equalTo($"redis: XGROUP DESTROY ${stream} ${group}")
+    end)
+  end)
+
+  suite("handle()", proc()
+    test("when called, redis.sendCommand() must be called", async proc()
+      # (1) act
+      const (
+        params = {stream, group}
+        redis = monitor(sim(sendCommand = method.resolves(1)))
+        state = {redis}
+        out = await(handle(state=, params))
+      )
+
+      # (2) assessment
+      expected(out).equalTo(1)
+
+      const sendCommand = monitor.log(redis, clear = true)
+      expected(sendCommand.calls).equalTo(1)
+      expected(sendCommand.call.args).first.equalTo(["XGROUP", "DESTROY", stream, group])
+    end)
+  end)
+end)

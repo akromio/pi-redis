@@ -12,7 +12,8 @@ module.exports = exports = {
   ["fin"]: finalize,
   ["ops"]: {
     ["ping"]: _core.dogma.use(require("./ops/ping")),
-    ["xgroup.create"]: _core.dogma.use(require("./ops/xgroupcreate"))
+    ["xgroup.create"]: _core.dogma.use(require("./ops/xgroup/create")),
+    ["xgroup.destroy"]: _core.dogma.use(require("./ops/xgroup/destroy"))
   }
 };
 async function initialize(args) {
