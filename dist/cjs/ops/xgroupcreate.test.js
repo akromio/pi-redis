@@ -51,7 +51,7 @@ suite(__filename, () => {
               ["group"]: group
             };
             const out = buildTitle(params);
-            expected(out).equalTo(`redis: XGROUP CREATE $(stream) $(group) $ MKSTREAM`);
+            expected(out).equalTo(`redis: XGROUP CREATE ${stream} ${group} $ MKSTREAM`);
           }
         });
       }
