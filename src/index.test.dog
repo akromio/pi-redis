@@ -24,6 +24,7 @@ suite(__filename, proc()
     expected(out.ops).toHave([
       "ping"
       "xgroup.create"
+      "xgroup.destroy"
     ])
   end)
 

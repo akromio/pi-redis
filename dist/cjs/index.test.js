@@ -31,7 +31,7 @@ suite(__filename, () => {
     test("when called, api must be returned", () => {
       {
         const out = _core.dogma.use(require("./index"));
-        expected(out.ops).toHave(["ping", "xgroup.create"]);
+        expected(out.ops).toHave(["ping", "xgroup.create", "xgroup.destroy"]);
       }
     });
     test("when ini() called, state must be returned", async () => {

@@ -2,7 +2,7 @@ use (
   alias://expected
   {monitor, sim, method} = alias://doubles
   
-  op = xgroupcreate
+  op = create
 )
 
 const (
